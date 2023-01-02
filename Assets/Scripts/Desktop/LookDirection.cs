@@ -14,6 +14,8 @@ public class LookDirection : MonoBehaviour
     public GameObject marker;
     public Material transparentMat;
     public Material solidMat;
+    public bool leftRot;
+
     protected bool transparencyEnabled;
 
     public float xSens;
@@ -34,13 +36,24 @@ public class LookDirection : MonoBehaviour
     private bool startrot;
 
     public Vector3 markerDist = new Vector3(0, 0, 1);
+    private bool scrolltoggle;
+    public float markerSizeMin = 0.0001f;
+    public float markerSizeMax = 0.2f;
+    public GameObject cameraLineStart;
+    public GameObject cameraLineEnd;
+
+
     public Transform lookDir;
     public Transform orientation;
+  
     // Start is called before the first frame update
     void Start()
     {
+        
+        scrolltoggle = true;
         startrot = true;
         marker.transform.position = this.transform.position + transform.rotation * markerDist;
+        ToggleTransparency();
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
     }
@@ -76,47 +89,50 @@ public class LookDirection : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
         }
 
+        if (leftRot) { 
         //LEFTMOUSEBUTTON
-        if (Input.GetMouseButton(0) && marker.activeSelf == true)
-        {
-           
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            // mouse input
-            float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * xSens;
-            float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * ySens;
-
-            xRot -= mouseY;
-            yRot += mouseX;
-
-            //Debug.Log(xRotfix);
-            
-            Vector3 tempV = new Vector3(xRot, yRot, 0);
-            targetRot = Quaternion.Euler(tempV); //We are setting the rotation around X, Y, Z axis respectively
-
-            //Rotate Camera
-            currentRot = Quaternion.Slerp(currentRot, targetRot, Time.smoothDeltaTime * slerpSmoothValue * 50);  //let cameraRot value gradually reach newQ which corresponds to our touch
-            if (startrot)
+            if (Input.GetMouseButton(0) && marker.activeSelf == true)
             {
-                Debug.Log("Ea");
-                deltacam = Vector3.Distance(marker.transform.position, transform.position);
-                dirToMark = new Vector3(0, 0, -deltacam);
-                startrot = false;
-                currentRot = transform.rotation;
-            }                                                                                                        //Multiplying a quaternion by a Vector3 is essentially to apply the rotation to the Vector3
-                                                                                                                     //This case it's like rotate a stick the length of the distance between the camera and the target and then look at the target to rotate the camera.
-            transform.position = marker.transform.position + currentRot * dirToMark;
-            transform.LookAt(marker.transform.position);
-            this.GetComponent<ObserverMovement>().observerPosition = transform.position;
+           
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                // mouse input
+                float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * xSens;
+                float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * ySens;
+
+                xRot -= mouseY;
+                yRot += mouseX;
+
+                //Debug.Log(xRotfix);
+            
+                Vector3 tempV = new Vector3(xRot, yRot, 0);
+                targetRot = Quaternion.Euler(tempV); //We are setting the rotation around X, Y, Z axis respectively
+
+                //Rotate Camera
+                currentRot = Quaternion.Slerp(currentRot, targetRot, Time.smoothDeltaTime * slerpSmoothValue * 50);  //let cameraRot value gradually reach newQ which corresponds to our touch
+                if (startrot)
+                {
+                    Debug.Log("Ea");
+                    deltacam = Vector3.Distance(marker.transform.position, transform.position);
+                    dirToMark = new Vector3(0, 0, -deltacam);
+                    startrot = false;
+                    currentRot = transform.rotation;
+                }                                                                                                        //Multiplying a quaternion by a Vector3 is essentially to apply the rotation to the Vector3
+                                                                                                                         //This case it's like rotate a stick the length of the distance between the camera and the target and then look at the target to rotate the camera.
+                transform.position = marker.transform.position + currentRot * dirToMark;
+                transform.LookAt(marker.transform.position);
+                this.GetComponent<ObserverMovement>().observerPosition = transform.position;
         }
-        else if (Input.GetMouseButtonUp(0))
-        {
+            else if (Input.GetMouseButtonUp(0))
+            {
 
             
-            startrot = true;
-            Cursor.visible = true;
-            //Cursor.lockState = CursorLockMode.Confined;
-            Cursor.lockState = CursorLockMode.None;
+                startrot = true;
+
+                Cursor.visible = true;
+                //Cursor.lockState = CursorLockMode.Confined;
+                Cursor.lockState = CursorLockMode.None;
+            }
         }
 
 
@@ -135,9 +151,33 @@ public class LookDirection : MonoBehaviour
             marker.transform.position = this.transform.position + transform.rotation * markerDist;
         }
 
-        Vector3 pos = marker.transform.position;
-        pos.z += Input.mouseScrollDelta.y * 1;
-        marker.transform.position = pos;
+        if (Input.GetKey("1"))
+        {
+            scrolltoggle = false;
+        }
+        if (Input.GetKey("2"))
+        {
+            scrolltoggle = true;
+        }
+
+        if (scrolltoggle)
+        {
+            
+            markerDist.z += Input.mouseScrollDelta.y * 0.005f;
+        }
+        else
+        {
+            if (marker.transform.localScale.x > markerSizeMin && marker.transform.localScale.x < markerSizeMax)
+            {
+                marker.transform.localScale += Input.mouseScrollDelta.y * 0.005f * new Vector3(1, 1, 1);
+            }
+            
+        }
+
+        
+
+
+
 
 
         //else if (Input.GetMouseButtonUp(2))

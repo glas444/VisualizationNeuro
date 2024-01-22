@@ -31,7 +31,7 @@ In the Desktop Environment the user inteacted with the 3D animation through a de
 The user was able to fly around the 3D scene using the keyboard and rotate the camera using the mouse.
 
 ### Spatial controls Desktop
-- Rotate Camera (looks around 
+- Rotate Camera (looks around the environment in first person view)
 - ROtate Around Marker [ROAM] (rotates around the marker at the current distance from it)
 - WASD keys for forward/back/left/right
 - Q&E to go up and down

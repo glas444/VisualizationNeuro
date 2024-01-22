@@ -1,7 +1,5 @@
-# MOCAP PROJECT
-
-## KTH Master's Degree Project in Computer Science 
-### Specialisation in Visualisation and Interactive Graphics
+# KTH Master's Degree Project in Computer Science 
+Specialisation in Visualisation and Interactive Graphics
 
 ## Unity 
 Version: 2021.3.3f1
